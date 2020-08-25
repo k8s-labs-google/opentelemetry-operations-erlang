@@ -13,53 +13,38 @@
 
 -define(SERVER, ?MODULE).
 
--define(CLOUD_TRACE_URL(Project, TraceId, SpanId),
-        <<"https://cloudtrace.googleapis.com/v2/projects/", Project, "/traces/", TraceId, "/spans/", SpanId, "/?key=AIzaSyDiE64Eil0GmV597ALmo3wZoGgShR1CvMo">>).
-
 start_link() ->
-    % os:putenv("GOOGLE_CREDENTIALS", "/Users/wbeebe/Downloads/terraform-seed-splunk-eada91d466bc.json"),
-    {ok, _Headers, Client} =
-        egoth:for_scope(<<"https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/trace.append">>),
-    Body = #{
-        <<"startTime">> => <<"2020-08-21T06:30:59Z">>,
-        <<"endTime">> => <<"2020-08-21T06:32:01Z">>,
-        <<"spanId">> => <<"1234942831952321">>,
-        <<"displayName">> => #{
-            <<"value">> => <<"errrrlang los four">>,
-            <<"truncatedByteCount">> => 0
-        }
-    },
-    URL = ?CLOUD_TRACE_URL("terraform-seed-splunk", "299d39ee2b0af307536490dc37c11356", "1234942831952321"),
-    {{ok, _Status1, _Headers1, _Response }, Client2} =
-        egoth:request(
-          post, json, URL, [200], [], Body, Client),
-    Body2 = #{
-        <<"startTime">> => <<"2020-08-21T06:30:59Z">>,
-        <<"endTime">> => <<"2020-08-21T06:32:01Z">>,
-        <<"spanId">> => <<"1234952831958321">>,
-        <<"displayName">> => #{
-            <<"value">> => <<"errrrlang los five">>,
-            <<"truncatedByteCount">> => 0
-        }
-    },
-    URL2 = ?CLOUD_TRACE_URL("terraform-seed-splunk", "299d39ee2b0af307536490dc37c11356", "1234952831958321"),
-        {{ok, _Status2, _Headers2, _Response2 }, Client3} =
-            egoth:request(
-            post, json, URL2, [200], [], Body2, Client2),
+    % % TODO: push projectId into config init
+    % ProjectId = <<"terraform-seed-splunk">>,
+    % TraceId  = <<"299d39ee2b0af307536490dc37c11356">>,
+    % SpanId  = <<"1234942831952321">>,
+    % Body = #{
+    %     <<"startTime">> => <<"2020-08-21T06:30:59Z">>,
+    %     <<"endTime">> => <<"2020-08-21T06:32:01Z">>,
+    %     <<"spanId">> => SpanId,
+    %     <<"displayName">> => #{
+    %         <<"value">> => <<"errrrlang los four">>,
+    %         <<"truncatedByteCount">> => 0
+    %     }
+    % },
+    % trace_exporter:create_span(ProjectId, TraceId, SpanId, Body),
 
-    io:fwrite("Hello World!~n"),
-    io:fwrite(_Response),
+    % TraceId2 = "299d39ee2b0af307536490dc37c11356",
+    % SpanId2  = "1234942831952321",
+    % Body2 = #{
+    %     <<"startTime">> => <<"2020-08-21T06:30:59Z">>,
+    %     <<"endTime">> => <<"2020-08-21T06:32:01Z">>,
+    %     <<"spanId">> => <<"1234952831958321">>,
+    %     <<"displayName">> => #{
+    %         <<"value">> => <<"errrrlang los five">>,
+    %         <<"truncatedByteCount">> => 0
+    %     }
+    % },
+    % trace_exporter:create_span(ProjectId, TraceId2, SpanId2, Body2),
+    % io:fwrite("Hello Worldddd!~n"),
     supervisor:start_link({local, ?SERVER}, ?MODULE, []).
 
-%% sup_flags() = #{strategy => strategy(),         % optional
-%%                 intensity => non_neg_integer(), % optional
-%%                 period => pos_integer()}        % optional
-%% child_spec() = #{id => child_id(),       % mandatory
-%%                  start => mfargs(),      % mandatory
-%%                  restart => restart(),   % optional
-%%                  shutdown => shutdown(), % optional
-%%                  type => worker(),       % optional
-%%                  modules => modules()}   % optional
+
 init([]) ->
     SupFlags = #{strategy => one_for_all,
                  intensity => 0,
