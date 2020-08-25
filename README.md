@@ -1,7 +1,7 @@
-erlang_goth
+Google Cloud Trace Exporter - Erlang
 =====
 
-An OTP application
+An OTP application for exporting [OpenTelemetry](https://opentelemetry.io/) traces to Google [Cloud Trace](https://cloud.google.com/trace).
 
 Build
 -----
