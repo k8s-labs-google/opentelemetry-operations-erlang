@@ -2,6 +2,7 @@
 [{<<"base64url">>,{pkg,<<"base64url">>,<<"0.0.1">>},2},
  {<<"certifi">>,{pkg,<<"certifi">>,<<"2.5.2">>},1},
  {<<"egoth">>,{localdep,"erlang-goth"},0},
+ {<<"gpb">>,{pkg,<<"gpb">>,<<"4.14.0">>},0},
  {<<"hackney">>,{pkg,<<"hackney">>,<<"1.16.0">>},0},
  {<<"idna">>,{pkg,<<"idna">>,<<"6.0.1">>},1},
  {<<"jiffy">>,{pkg,<<"jiffy">>,<<"1.0.5">>},0},
@@ -16,6 +17,7 @@
 {pkg_hash,[
  {<<"base64url">>, <<"36A90125F5948E3AFD7BE97662A1504B934DD5DAC78451CA6E9ABF85A10286BE">>},
  {<<"certifi">>, <<"B7CFEAE9D2ED395695DD8201C57A2D019C0C43ECAF8B8BCB9320B40D6662F340">>},
+ {<<"gpb">>, <<"C31C03C8D9CE3658601777B3410D61CE8027EA4521F2F1666B5944889E585E55">>},
  {<<"hackney">>, <<"5096AC8E823E3A441477B2D187E30DD3FFF1A82991A806B2003845CE72CE2D84">>},
  {<<"idna">>, <<"1D038FB2E7668CE41FBF681D2C45902E52B3CB9E9C77B55334353B222C2EE50C">>},
  {<<"jiffy">>, <<"A69B58FAF7123534C20E1B0B7AE97AC52079CA02ED4B6989B4B380179CD63A54">>},

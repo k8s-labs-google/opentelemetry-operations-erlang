@@ -2,6 +2,20 @@
 
 -behaviour(gen_server).
 
+-include("trace.hrl").
+
+% TODO: fix
+% -include_lib("egoth/include/egoth.hrl").
+
+-record(token, {
+    token   :: string(),
+    type    = undefined :: string() | undefined,
+    scope   = undefined :: string() | undefined,
+    sub     = undefined :: string() | undefined,
+    expires :: non_neg_integer(),
+    account :: string()
+}).
+
 -export([start/0]).
 -export([start_link/0]).
 
@@ -17,7 +31,7 @@
 -define(SERVER, ?MODULE).
 -define(DEFAULT_TTL, 300).
 -define(CLOUD_TRACE_URL(Project, TraceId, SpanId),
-        <<"https://cloudtrace.googleapis.com/v2/projects/", Project, "/traces/", TraceId, "/spans/", SpanId, "/?key=AIzaSyDiE64Eil0GmV597ALmo3wZoGgShR1CvMo">>).
+  lists:concat(["https://cloudtrace.googleapis.com/v2/projects/", Project, "/traces/", TraceId, "/spans/", SpanId])).
 
 -spec start() -> {atom(), pid()}.
 start() ->
@@ -29,11 +43,16 @@ start_link() ->
 
 % vital that this is a cast and not a call
 % so this is not thread blocking
+- spec create_span(Project, TraceId, SpanId, Body) -> Return when
+  Project :: string(),
+  TraceId :: string(),
+  SpanId :: string(),
+  Body  :: binary() | string(),
+  Return :: ok.
 create_span(Project, TraceId, SpanId, Body) ->
   URL = ?CLOUD_TRACE_URL(Project, TraceId, SpanId),
-  Message = #{body => Body, url => URL},
-  gen_server:cast(?SERVER, Message),
-  {ok}.
+  Message = {Body, URL},
+  gen_server:cast(?SERVER, Message).
 
 %%%_ * gen_server callbacks --------------------------------------------
 
@@ -41,18 +60,31 @@ init(State) ->
   {ok, State}.
 
 handle_call(_, Args, State) ->
-  {ok, Args, State}.
+  {reply, Args, State}.
 
-handle_cast({body = Body, url = URL}, {client = Client}) ->
+handle_cast({Body, URL}, _State) ->
   {ok, Token} =
     egoth:for_scope(<<"https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/trace.append">>),
+  AccessToken = Token#token.token,
   Headers = [{
-    <<"Authorization">>, <<"Bearer ", Token>>
+    <<"Authorization">>, <<"Bearer ", AccessToken/binary>>
+  }, {
+    <<"Content-Type">>, <<"application/json">>
   }],
+
+  % TODO: support proto
+  % ProtoBody = #'google.devtools.cloudtrace.v2.Span'{
+  %   name = "something",
+  %   span_id = "something"
+  % },
+  % Payload = trace:encode_msg(ProtoBody),
+
   Payload = jiffy:encode(Body),
   Options = [],
-  {ok, StatusCode, RespHeaders, ClientRef} = hackney:post(URL, Headers, Payload, Options),
+  {ok, _StatusCode, _RespHeaders, ClientRef} = hackney:post(URL, Headers, Payload, Options),
   NewState = #{client => ClientRef},
+  {ok, _Body2} = hackney:body(ClientRef),
+  % should we do anything with the response?
   {noreply, NewState}.
 
 %%%_ * Private functions -----------------------------------------------
