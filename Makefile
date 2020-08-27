@@ -14,6 +14,9 @@ refresh:
 	rebar3 compile
 	rebar3 shell
 
+docs:
+	rebar3 edoc
+
 elvis:
 ifdef ELVIS_IN_PATH
 	elvis git-branch origin/HEAD -V

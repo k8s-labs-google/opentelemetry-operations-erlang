@@ -1,0 +1,3 @@
+%% encoding: UTF-8
+{application,trace_exporter}.
+{modules,[trace_exporter,trace_exporter_app,trace_exporter_sup]}.
