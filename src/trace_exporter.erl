@@ -54,9 +54,15 @@ create_span(Project, TraceId, SpanId, Body) ->
   Message = {Body, URL},
   gen_server:cast(?SERVER, Message).
 
+% this will be called by OT batch processor
+% https://github.com/open-telemetry/opentelemetry-erlang/blob/ddd9cdcc9c6bddb737ddad5a054843b2f042f339/src/ot_batch_processor.erl
+export(SpansTid, Resource, Config) ->
+  [].
+
 %%%_ * gen_server callbacks --------------------------------------------
 
 init(State) ->
+  % TODO: handle passing in options like projectId
   {ok, State}.
 
 handle_call(_, Args, State) ->
@@ -79,6 +85,7 @@ handle_cast({Body, URL}, _State) ->
   % },
   % Payload = trace:encode_msg(ProtoBody),
 
+  % TODO: batch requests
   Payload = jiffy:encode(Body),
   Options = [],
   {ok, _StatusCode, _RespHeaders, ClientRef} = hackney:post(URL, Headers, Payload, Options),
